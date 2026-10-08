@@ -1,22 +1,12 @@
-from pathlib import Path
 from core.config import settings
-import asyncio
-from rag.splitter import get_chunks
+from services.embeddings import embedder, vector_size
 
-from langchain_ollama import OllamaEmbeddings
-from langchain_gigachat.embeddings import GigaChatEmbeddings
-from langchain_openai.embeddings import OpenAIEmbeddings
 from qdrant_client.models import Distance, VectorParams
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
+
 client = QdrantClient(host="localhost", port=6333)
-embedder = GigaChatEmbeddings(
-    credentials=settings.GIGACHAT_CREDENTIALS,  # замени на свой
-    verify_ssl_certs=False,
-    scope="GIGACHAT_API_PERS"
-)
-vector_size = len(embedder.embed_query("Пример"))
 collection_name = "war-and-peace"
 
 if not client.collection_exists(collection_name):
@@ -46,8 +36,8 @@ vectorstore_q = QdrantVectorStore(client=client, collection_name=collection_name
 #print(aoi_vector)
 #print(len(aoi_vector))
 
-async def main():
-    chunks = get_chunks(Path("../docs/war-and-peace-1.txt"))
-    await vectorstore_q.aadd_documents(documents=chunks)
-
-asyncio.run(main())
+#async def main():
+#    chunks = get_chunks(Path("../docs/war-and-peace-1.txt"))
+#    await vectorstore_q.aadd_documents(documents=chunks)
+#
+#asyncio.run(main())
