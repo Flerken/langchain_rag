@@ -12,7 +12,7 @@ rag_chain = ({
     "question" : RunnablePassthrough()
     }
     | prompt
-    | currency_model
+    | currency_model_fallback
     | StrOutputParser()
 )
 
