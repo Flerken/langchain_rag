@@ -1,15 +1,15 @@
 from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrough
 from langchain_core.output_parsers import MarkdownListOutputParser, StrOutputParser
 
-from rag.retriver import retriever
+from rag.retriver import base_retriever, book_retriever
 from core.prompts import prompt
 from core.parsers import format_docs
 from core.models import currency_model, currency_model_fallback
 
 
 rag_chain = ({
-    "context" : retriever | format_docs,
-    "question" : RunnablePassthrough()
+    "context" : book_retriever | format_docs,
+    "question" : RunnableLambda(lambda q: q["question"])
     }
     | prompt
     | currency_model_fallback
