@@ -1,7 +1,7 @@
 from langchain_unstructured import UnstructuredLoader
 
 file_paths = [
-    "../docs/war-and-peace-1.txt"
+    "../docs/war-and-peace.txt-1.txt"
 ]
 
 loader = UnstructuredLoader(file_path=file_paths)

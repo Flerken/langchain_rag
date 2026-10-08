@@ -1,58 +1,11 @@
 from locale import currency
-
-from core.chains import currency_chain
-from tools.tools import convert_currency_tool, iphone_price
-from core.prompts import currency_prompt_template
-from langchain_core.messages import ToolMessage
+from core.callback import ErrorHandler, BaseCallback
+from core.chains import rag_chain
 from core.models import currency_model
-from core.callback import BaseCallback, ErrorHandler
-from random import choice
 
-text = input("Ваш запрос: ")
+text = "Сколько лет было графине"
 
-result = currency_chain.invoke({"text": text})
+answer = rag_chain.invoke(text) #, config={"callbacks": [BaseCallback(), ErrorHandler()]}
 
-#print(result)
+print(answer)
 
-tools = {
-    "iphone_price": iphone_price,
-    "convert_currency" : convert_currency_tool
-}
-tool_message = []
-
-tool_calls = result.tool_calls
-
-print(tool_calls)
-
-if tool_calls:
-    for tool_call in tool_calls:
-        tool = tools[tool_call["name"]]
-        output = tool.invoke(tool_call["args"])
-        tool_message.append(ToolMessage(tool_call_id=tool_call["id"], content=output))
-
-    messages = currency_prompt_template.format_messages(text=text)
-    messages += [result]
-    messages += tool_message
-
-    final_result = currency_model.invoke(messages)
-
-    #for message in messages:
-    #    print(message)
-    #    print()
-    print(final_result.text)
-else:
-    print(result.text)
-
-
-#recipes = recipe_chain.invoke({ "dish" : dishes[0], "price" : 300 }, config={"callbacks": [BaseCallback()]})
-#
-##recipes = recipe_chain.batch([{ "dish" : d, "price" : 300 } for d in dishes])
-##
-##
-#print(f"{recipes}")
-#
-#recipes = zip(dishes, recipes)
-#
-#for name, recipe in recipes:
-#    with open(f"./recipes/{name}.txt", "w") as f:
-#        f.write(recipe)
