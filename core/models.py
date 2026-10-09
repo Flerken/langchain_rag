@@ -12,6 +12,7 @@ from langchain_openai.chat_models.base import OpenAIAuthenticationError, OpenAII
 from langchain_openai.chat_models import ChatOpenAI
 from openai import AuthenticationError, APIError  # общий класс
 from gigachat.exceptions import BadRequestError
+from shemas.multyquery import MultiQueryOutput
 
 from core.config import settings
 #from shemas.choice import GeneratedMenu, GeneratedRecipe
@@ -33,7 +34,7 @@ gigachat_model = ChatOpenAI(
     api_key=settings.CLOUD_API_KEY, # Для авторизации запросов используйте ключ, полученный в проекте GigaChat API
     base_url=settings.CLOUD_BASE_URL,
     temperature=settings.GIGACHAT_TEMPERATURE,  # Креативность ответов
-    max_tokens=settings.GIGACHAT_MAX_TOKENS,
+    #max_tokens=settings.GIGACHAT_MAX_TOKENS,
 )
 
 yandex_model = ChatOpenAI(
@@ -49,6 +50,8 @@ currency_model_fallback = yandex_model
 currency_model = gigachat_model.with_fallbacks(
                     fallbacks=[currency_model_fallback],
                     exceptions_to_handle=(BadRequestError, OpenAIInvalidRequestError, ))
+
+queries_generator_model = gigachat_model.with_structured_output(MultiQueryOutput, strict=True)
 
 # Структурированные модели
 
