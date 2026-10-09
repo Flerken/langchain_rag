@@ -3,6 +3,19 @@ from random import choice
 from langchain_core.runnables import RunnableLambda
 from langchain_core.messages import AIMessage
 
+def document_source(document):
+    metadata = document.metadata
+    content = document.page_content
+    source = "## Источник: \n Том: {}, Глава: {}, Часть: {}".format(
+        metadata.get("Книга", "не указана"),
+        metadata.get("Глава", "не указана"),
+        metadata.get("Часть", "не указана")
+    )
+
+    context = f"## Контекст \n{content}"
+
+    return f"{source}\n{context}"
+
 def format_docs_func(results):
     final_docs = {}
 
@@ -25,7 +38,7 @@ def format_docs_func(results):
 
     pprint(final_docs)
 
-    return "\n\n".join(doc["document"].page_content for doc in final_docs)
+    return "\n\n".join(document_source(doc["document"]) for doc in final_docs)
 
 format_docs = RunnableLambda(format_docs_func)
 

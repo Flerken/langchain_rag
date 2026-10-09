@@ -14,13 +14,14 @@ from langchain_core.runnables import RunnableLambda
 
 prompt = ChatPromptTemplate.from_template("""
 Ответь на вопрос, использую контекст ниже.
+Для каждого аргумента приводи источник
 Если ответа в контексте нет, так и скажи.
 
-Контекст: {context}
+# Контекст: {context}
 
-Вопрос: {question}
+# Вопрос: {question}
 
-Ответ:
+# Ответ:
 """)
 
 multi_query_prompt = ChatPromptTemplate.from_template("""

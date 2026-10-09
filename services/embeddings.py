@@ -16,7 +16,7 @@ from langchain_openai.embeddings import OpenAIEmbeddings
 #    base_url = settings.CLOUD_BASE_URL,
 #)
 embedder = OpenAIEmbeddings(
-    model="Qwen/Qwen3-Embedding-0.6B",
+    model="ai-sage/Giga-Embeddings-instruct-480M",
     api_key = settings.CLOUD_API_KEY,
     base_url = settings.CLOUD_BASE_URL,
 )
