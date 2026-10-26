@@ -36,7 +36,7 @@ def format_docs_func(results):
 
     final_docs = sorted(final_docs.values(), key=lambda x: x["score"], reverse=True)[:12]
 
-    pprint(final_docs)
+    #pprint(final_docs)
 
     return "\n\n".join(document_source(doc["document"]) for doc in final_docs)
 
