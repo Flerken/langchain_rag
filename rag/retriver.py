@@ -1,7 +1,11 @@
+from unittest import result
+
 from langchain_core.runnables import RunnableLambda
 
 from core.config import settings
 from services.vectorstore import vectorstore_q
+from services.indexer import load_chunks
+from langchain_community.retrievers import BM25Retriever
 
 base_retriever = vectorstore_q.as_retriever(
     search_type="mmr",
@@ -33,4 +37,23 @@ def book_retriever_func(question: dict):
 
     return vectorstore_q.as_retriever(search_type="mmr", search_kwargs=search_params).invoke(question)
 
+
+def book_bm25_retriever_func(question: dict):
+    chunks = load_chunks()
+    retriever = BM25Retriever.from_documents(chunks, k=5)
+
+    book = question.get("book")
+    question = question["question"]
+
+    results = []
+
+    for doc in retriever.invoke(question):
+        if book and doc.metadata.get("book") != book:
+            continue
+        results.append(doc)
+
+    return results
+
+
 book_retriever = RunnableLambda(book_retriever_func)
+book_bm25_retriever = RunnableLambda(book_bm25_retriever_func)

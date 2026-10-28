@@ -18,12 +18,15 @@ def document_source(document):
 
 def format_docs_func(results):
     final_docs = {}
+    #print(results)
+    combined_results = [results["bm25_results"]]
+    combined_results.extend(results["vector_results"])
 
-    for result in results:
+    for result in combined_results:
         #print(result)
         #print("#*#" * 50)
         for rank, doc in enumerate(result):
-            chunk_id = doc.metadata["_id"]
+            chunk_id = doc.metadata["chunk_id"]
             score = 1.0 / (rank + 1)
 
             if chunk_id not in final_docs:
@@ -43,8 +46,8 @@ def format_docs_func(results):
 format_docs = RunnableLambda(format_docs_func)
 
 def queries_list_func(inputs: dict):
-    print(inputs)
-    print("\n\n\n")
+    #print(inputs)
+    #print("\n\n\n")
     return [{"question": i, "book": inputs["book"]} for i in inputs["queries"]]
 
 queries_list = RunnableLambda(queries_list_func)

@@ -46,13 +46,13 @@ def load_chunks():
 
 #save_chunks()
 
-for chunk in load_chunks():
-    print(chunk)
-    print()
+#for chunk in load_chunks():
+#    print(chunk)
+#    print()
 
 async def full_index():
     book_chunks = load_chunks()
     await vectorstore_q.aadd_documents(documents=book_chunks)
 
-
-asyncio.run(full_index())
+if __name__ == "__main__":
+    asyncio.run(full_index())

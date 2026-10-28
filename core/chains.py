@@ -1,7 +1,7 @@
 from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrough, RunnableParallel
 from langchain_core.output_parsers import MarkdownListOutputParser, StrOutputParser
 
-from rag.retriver import base_retriever, book_retriever
+from rag.retriver import base_retriever, book_retriever, book_bm25_retriever
 from core.prompts import prompt, multi_query_prompt
 from core.parsers import format_docs, queries_list
 from core.models import currency_model, currency_model_fallback, queries_generator_model
@@ -19,7 +19,11 @@ rag_chain = (
         book=RunnableLambda(lambda q: q["book"])
     )
     | RunnableParallel ({
-        "context" : RunnableLambda(lambda x: x["queries"]) | book_retriever.map() | format_docs,
+        "context" :
+            RunnableParallel(
+                vector_results=RunnableLambda(lambda x: x["queries"]) | book_retriever.map(),
+                bm25_results = RunnableLambda(lambda x: {"question" : x["question"], "book": x["book"]}) | book_bm25_retriever
+            ) | format_docs,
         "question" : RunnableLambda(lambda q: q["question"]),
         "book" : RunnableLambda(lambda q: q["book"])
     })
