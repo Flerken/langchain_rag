@@ -1,3 +1,5 @@
+import datetime
+
 import httpx
 from  langchain_core.tools import tool, BaseTool
 from pydantic import BaseModel, Field
@@ -43,3 +45,10 @@ def iphone_price() -> float:
     """
     print("iphone_price")
     return 85_000.00
+
+
+@tool()
+def current_time() -> str:
+    """Возравращает текущую дату и вреия в формате %Y-%m-%d %H:%M:%S"""
+    print("current_time")
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
