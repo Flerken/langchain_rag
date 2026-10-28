@@ -1,11 +1,50 @@
-from locale import currency
-from core.callback import ErrorHandler, BaseCallback
-from core.chains import rag_chain
-from core.models import currency_model
+from langchain_core.messages import ToolMessage
 
-text = "Кто такой Пьер?"
+from core.chains import currency_chain
+from core.prompts import currency_prompt_template
+from core.t_models import tools_model
+from tools import convert_currency_tool, iphone_price, rag
 
-answer = rag_chain.invoke({"question": text, "book": "war-and-peace-2"}) #, config={"callbacks": [BaseCallback(), ErrorHandler()]}
+#text = "Кто такой Пьер?"
 
-print(answer)
 
+#print(text)
+
+text = input("Что конвертируем? ")
+result = currency_chain.invoke({"text": text})
+# print(result)
+
+tools = {
+    "convert_currency": convert_currency_tool,
+    "iphone_price": iphone_price,
+    "common_question": rag
+}
+
+tool_messages = []
+
+tool_calls = result.tool_calls
+is_rag = False
+if tool_calls:
+    for tool_call in tool_calls:
+        tool = tools[tool_call["name"]]
+        output = tool.invoke(tool_call["args"])
+
+        if tool_call["name"] == "common_question":
+            print(output)
+            is_rag = True
+            break
+
+        tool_messages.append(
+            ToolMessage(tool_call_id=tool_call["id"], content=output)
+        )
+
+    if not is_rag:
+        messages = currency_prompt_template.format_messages(text=text)
+        messages += [result]
+        messages += tool_messages
+
+        final_result = tools_model.invoke(messages)
+        print(final_result.text)
+
+else:
+    print(result.text)

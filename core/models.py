@@ -16,7 +16,7 @@ from shemas.multyquery import MultiQueryOutput
 
 from core.config import settings
 #from shemas.choice import GeneratedMenu, GeneratedRecipe
-from tools.tools import convert_currency_tool, iphone_price
+from tools import convert_currency_tool, iphone_price, rag
 
 # Инициализация объекта GigaChat
 #gigachat_model = GigaChat(
@@ -53,6 +53,7 @@ currency_model = gigachat_model.with_fallbacks(
 
 queries_generator_model = gigachat_model.with_structured_output(MultiQueryOutput, strict=True)
 
+tools_model = yandex_model.bind_tools([convert_currency_tool, iphone_price, rag])
 # Структурированные модели
 
 

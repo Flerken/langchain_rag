@@ -2,10 +2,9 @@ from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrou
 from langchain_core.output_parsers import MarkdownListOutputParser, StrOutputParser
 
 from rag.retriver import base_retriever, book_retriever, book_bm25_retriever
-from core.prompts import prompt, multi_query_prompt
+from core.prompts import prompt, multi_query_prompt, currency_prompt
 from core.parsers import format_docs, queries_list
-from core.models import currency_model, currency_model_fallback, queries_generator_model
-
+from core.models import currency_model, currency_model_fallback, queries_generator_model, tools_model
 
 queries_chain = RunnableParallel(
     queries = multi_query_prompt | queries_generator_model | RunnableLambda(lambda a: a.queries),
@@ -32,6 +31,8 @@ rag_chain = (
     | StrOutputParser()
 )
 
+
+currency_chain = currency_prompt | tools_model
 #dishes_chain = dishes_chain.with_fallbacks(
 #    fallbacks=[emergency_dishes_chain],
 #    exceptions_to_handle=[Exception]

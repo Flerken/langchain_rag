@@ -4,6 +4,12 @@ from pydantic import BaseModel, Field
 from typing import Type
 from tools.shemas import ConvertCurrencyArgs
 
+@tool("common_question", description="Общие вопросы пользователя", return_direct=True)
+def rag(question: str) -> str:
+    from core.chains import rag_chain
+    print("rag")
+    return rag_chain.invoke({"question": question, "book": None})
+
 
 class ConvertCurrencyTool(BaseTool):
     name: str = "convert_currency"
